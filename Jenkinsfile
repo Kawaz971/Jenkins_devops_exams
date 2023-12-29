@@ -30,8 +30,8 @@ pipeline {
                             sh 'docker image tag movie-service:v1.$BUILD_ID jaysse/movie-service:v1.$BUILD_ID'
                             sh 'docker image tag movie-service:v1.$BUILD_ID jaysse/movie-service:v1.latest'
                             sh 'docker login -u jaysse -p ${dockerhub_password}'
-                            sh 'docker image push jaysse/cast-service:v1.$BUILD_ID'
-                            sh 'docker image push jaysse/cast-service:v1.latest'
+                            sh 'docker image push jaysse/movie-service:v1.$BUILD_ID'
+                            sh 'docker image push jaysse/movie-service:v1.latest'
 
                         }     
                         
