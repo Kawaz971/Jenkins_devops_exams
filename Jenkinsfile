@@ -14,12 +14,29 @@ pipeline {
                             sh 'docker image push jaysse/cast-service:v1.$BUILD_ID'
                             sh 'docker image push jaysse/cast-service:v1.latest'
 
-    
-                        }
-                    
-                    
+                        }     
                         
                     }
+
+                }
+            }
+        }
+        stage('Build and Push movie-service') {
+            steps {
+                script {
+                    dir('movie-service') {
+                        withCredentials([string(credentialsId: 'dockerhub_passwd', variable: 'dockerhub_password')]) {
+                            sh 'docker build -t movie-service:v1.$BUILD_ID .'
+                            sh 'docker image tag movie-service:v1.$BUILD_ID jaysse/movie-service:v1.$BUILD_ID'
+                            sh 'docker image tag movie-service:v1.$BUILD_ID jaysse/movie-service:v1.latest'
+                            sh 'docker login -u jaysse -p ${dockerhub_password}'
+                            sh 'docker image push jaysse/cast-service:v1.$BUILD_ID'
+                            sh 'docker image push jaysse/cast-service:v1.latest'
+
+                        }     
+                        
+                    }
+
                 }
             }
         }
