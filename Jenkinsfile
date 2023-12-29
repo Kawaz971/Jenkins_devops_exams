@@ -6,11 +6,19 @@ pipeline {
             steps {
                 script {
                     dir('cast-service') {
-                        // Commandes de build et de push pour cast-service
+                        withCredentials([string(credentialsId: 'dockerhub_passwd', variable: 'dockerhub_password')]) {
+                            sh 'docker build -t cast-service:v1.$BUILD_ID .'
+                            sh 'docker image tag cast-service:v1.$BUILD_ID jaysse/cast-service:v1.$BUILD_ID'
+                            sh 'docker image tag cast-service:v1.$BUILD_ID jaysse/cast-service:v1.latest'
+                            sh 'docker login -u jaysse -p ${dockerhub_password}'
+                            sh 'docker image push jaysse/cast-service:v1.$BUILD_ID'
+                            sh 'docker image push jaysse/cast-service:v1.latest'
+
+    
+                        }
                     
-                        sh 'docker build -t cast-service:v1.$BUILD_ID .'
-                        sh 'docker image tag cast-service:v1.$BUILD_ID jaysse/cast-service:v1.$BUILD_ID'
-                        sh 'docker image tag cast-service:v1.$BUILD_ID jaysse/cast-service:v1.latest'
+                    
+                        
                     }
                 }
             }
