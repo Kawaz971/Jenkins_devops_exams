@@ -9,7 +9,8 @@ pipeline {
                         // Commandes de build et de push pour cast-service
                     
                         sh 'docker build -t cast-service:v1.$BUILD_ID .'
-                        
+                        sh 'docker image tag cast-service:v1.$BUILD_ID jaysse/cast-service:v1.$BUILD_ID'
+                        sh 'docker image tag cast-service:v1.$BUILD_ID jaysse/cast-service:v1.latest'
                     }
                 }
             }
