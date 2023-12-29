@@ -1,0 +1,79 @@
+movie_service:
+  image:
+    repository: jaysse/movie-service
+    tag: latest
+  replicaCount: 1
+  service:
+    name: movie-service
+    type: ClusterIP
+    port: 8000
+  env:
+    - name: DATABASE_URI
+      value: postgresql://movie_db_username:movie_db_password@movie_db/movie_db_dev
+    - name: CAST_SERVICE_HOST_URL
+      value: http://cast-service:8000/api/v1/casts/
+
+movie_db:
+  image:
+    repository: postgres
+    tag: 12.1-alpine
+  replicaCount: 1
+  volumeClaimTemplate:
+    accessModes: [ "ReadWriteOnce" ]
+    resources:
+      requests:
+        storage: 1Gi
+  env:
+    - name: POSTGRES_USER
+      value: movie_db_username
+    - name: POSTGRES_PASSWORD
+      value: movie_db_password
+    - name: POSTGRES_DB
+      value: movie_db_dev
+
+cast_service:
+  image:
+    repository: jaysse/cast-service
+    tag: latest
+  replicaCount: 1
+  service:
+    name: cast-service
+    type: ClusterIP
+    port: 8000
+  env:
+    - name: DATABASE_URI
+      value: postgresql://cast_db_username:cast_db_password@cast_db/cast_db_dev
+
+cast_db:
+  image:
+    repository: postgres
+    tag: 12.1-alpine
+  replicaCount: 1
+  volumeClaimTemplate:
+    accessModes: [ "ReadWriteOnce" ]
+    resources:
+      requests:
+        storage: 1Gi
+  env:
+    - name: POSTGRES_USER
+      value: cast_db_username
+    - name: POSTGRES_PASSWORD
+      value: cast_db_password
+    - name: POSTGRES_DB
+      value: cast_db_dev
+
+nginx:
+  image:
+    repository: nginx
+    tag: latest
+  replicaCount: 1
+  service:
+    name: nginx
+    type: LoadBalancer
+    port: 8080
+  volumeMounts:
+    - mountPath: /etc/nginx/conf.d/default.conf
+      subPath: nginx_config.conf
+  dependsOn:
+    - cast-service
+    - movie-service
